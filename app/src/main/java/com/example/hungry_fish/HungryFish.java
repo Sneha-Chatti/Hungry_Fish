@@ -15,17 +15,17 @@ import android.media.MediaPlayer;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.widget.PopupWindow;
 
 class HungryFish extends SurfaceView implements SurfaceHolder.Callback {
     GameThread thread;
     private final int NUM_OF_LIVES = 3;
+    PopupWindow popUp;
     static int scorePts;
     int timer, fishW, fishH, fishX, fishY, bgrScroll, screenW, screenH, yellowFoodSpeed = 10, greenFoodSpeed = 15, redFoodSpeed = 12, numOfLivesConsumed, level = 1, round, threshold = 500;
     Bitmap bgr[] = new Bitmap[5];
     Bitmap bgrReverse[] = new Bitmap[5];
-    Bitmap life[] = new Bitmap[2];
-    Bitmap fish[] = new Bitmap[2];
-    Bitmap yellowWorm, greenWorm, bomb, capsule, medicine;
+    Bitmap life, fish, yellowWorm, greenWorm, bomb, capsule, medicine;
     int yellowFoodOffset[] = new int[2];
     int greenFoodOffset[] = new int[2];
     int redFoodOffset[] = new int[2];
@@ -40,11 +40,13 @@ class HungryFish extends SurfaceView implements SurfaceHolder.Callback {
 
     public HungryFish(Context context) {
         super(context);
+        popUp = new PopupWindow(this);
+
         scorePts = 0;
         timer = 0;
         for(int i = 0; i < 5; i++)
             bgr[i] = BitmapFactory.decodeResource(getResources(),R.drawable.background+i); //Load a background.
-        fish[0] = BitmapFactory.decodeResource(getResources(),R.drawable.hungry_fish); //Load fish.
+        fish = BitmapFactory.decodeResource(getResources(),R.drawable.hungry_fish); //Load fish.
         yellowWorm = BitmapFactory.decodeResource(getResources(), R.drawable.yellow_worm1);
         greenWorm = BitmapFactory.decodeResource(getResources(), R.drawable.green_worm);
         bomb = BitmapFactory.decodeResource(getResources(), R.drawable.bacteria);
@@ -56,10 +58,7 @@ class HungryFish extends SurfaceView implements SurfaceHolder.Callback {
         score.setTypeface(Typeface.DEFAULT_BOLD);
         score.setAntiAlias(true);
 
-        life[0] = BitmapFactory.decodeResource(getResources(), R.drawable.hearts);
-
-        fishW = fish[0].getWidth();
-        fishH = fish[0].getHeight();
+        life = BitmapFactory.decodeResource(getResources(), R.drawable.hearts);
 
         //Create a flag for the onDraw method to alternate background with its mirror image.
         reverseBackroundFirst = false;
@@ -82,16 +81,16 @@ class HungryFish extends SurfaceView implements SurfaceHolder.Callback {
 
         for(int i = 0; i < 5; i++)
             bgr[i] = Bitmap.createScaledBitmap(bgr[i], w, h, true); //Scale background to fit the screen.
-        life[0] = Bitmap.createScaledBitmap(life[0], w/12, h/12, true);
-        fish[0] = Bitmap.createScaledBitmap(fish[0], w/6, h/4, true);
+        life = Bitmap.createScaledBitmap(life, w/12, h/12, true);
+        fish = Bitmap.createScaledBitmap(fish, w/6, h/4, true);
         yellowWorm = Bitmap.createScaledBitmap(yellowWorm, w/11, h/9, true);
         greenWorm = Bitmap.createScaledBitmap(greenWorm, w/11, h/9, true);
         bomb = Bitmap.createScaledBitmap(bomb, w/13, h/8, true);
         capsule = Bitmap.createScaledBitmap(capsule, w/13, h/8, true);
         medicine = Bitmap.createScaledBitmap(medicine, w/13, h/8, true);
 
-        fishW = fish[0].getWidth();
-        fishH = fish[0].getHeight();
+        fishW = fish.getWidth();
+        fishH = fish.getHeight();
 
         //Create a mirror image of the background (horizontal flip) - for a more circular background.
         Matrix matrix = new Matrix();  //Like a frame or mould for an image.
@@ -169,7 +168,7 @@ class HungryFish extends SurfaceView implements SurfaceHolder.Callback {
 
     public void drawLife(Canvas canvas) {
         for(int i = 0; i < NUM_OF_LIVES - numOfLivesConsumed; i++)
-            canvas.drawBitmap(life[0], (screenW - (screenW / 12) * 3) + (i * screenW / 12), 0, null);
+            canvas.drawBitmap(life, (screenW - (screenW / 12) * 3) + (i * screenW / 12), 0, null);
     }
 
     public void drawMovingFish(Canvas canvas) {
@@ -207,7 +206,7 @@ class HungryFish extends SurfaceView implements SurfaceHolder.Callback {
         }
 
         canvas.save(); //Save the position of the canvas matrix.
-        canvas.drawBitmap(fish[0], fishX, fishY, null); //Draw the fish by applying the canvas rotated matrix.
+        canvas.drawBitmap(fish, fishX, fishY, null); //Draw the fish by applying the canvas rotated matrix.
         canvas.restore(); //Rotate the canvas matrix back to its saved position - only the fish bitmap was rotated not all canvas.
     }
 
@@ -258,7 +257,7 @@ class HungryFish extends SurfaceView implements SurfaceHolder.Callback {
         }
         if(offset[0] < 0) {
             offset[0] = screenW + (speed + 1);
-            offset[1] = (int) Math.floor(Math.random() * screenH);
+            offset[1] = (int) Math.floor(Math.random() * (screenH-fishH));
         }
 
         canvas.drawBitmap(food, offset[0], offset[1], null);
