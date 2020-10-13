@@ -20,7 +20,6 @@ import android.widget.PopupWindow;
 class HungryFish extends SurfaceView implements SurfaceHolder.Callback {
     GameThread thread;
     private final int NUM_OF_LIVES = 3;
-    PopupWindow popUp;
     static int scorePts;
     int timer, fishW, fishH, fishX, fishY, bgrScroll, screenW, screenH, yellowFoodSpeed = 10, greenFoodSpeed = 15, redFoodSpeed = 12, numOfLivesConsumed, level = 1, round, threshold = 500;
     Bitmap bgr[] = new Bitmap[5];
@@ -40,7 +39,6 @@ class HungryFish extends SurfaceView implements SurfaceHolder.Callback {
 
     public HungryFish(Context context) {
         super(context);
-        popUp = new PopupWindow(this);
 
         scorePts = 0;
         timer = 0;
